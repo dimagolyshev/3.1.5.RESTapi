@@ -2,10 +2,21 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Spring Security Example</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<h1>User, welcome spring boot security page!</h1>
+<div class="top-right-buttons">
+    <a href="/login" class="button" sec:authorize="!isAuthenticated()">Login</a>
+    <a href="/logout" class="button" sec:authorize="isAuthenticated()">Logout</a>
+</div>
 
+<h1>Welcome, <span sec:authentication="name"></span>!</h1>
+
+<div>
+    <th:block th:each="detail : ${details}">
+        <p th:text="${detail}"></p>
+    </th:block>
+</div>
 
 </body>
 </html>

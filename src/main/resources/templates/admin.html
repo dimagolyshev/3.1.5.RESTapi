@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Spring Security Example</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            text-align: center;
+            padding: 8px;
+        }
+
+        table {
+            width: 40%;
+            margin: 20px auto;
+        }
+
+        .action-btn {
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 4px;
+            margin: 2px;
+        }
+
+        .delete-btn {
+            background-color: #ff4d4d;
+        }
+
+        .edit-btn {
+            background-color: #4CAF50;
+        }
+
+        .add-btn {
+            background-color: #007BFF;
+            margin: 20px auto;
+            display: block;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .add-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .create-user-form {
+            display: none;
+            width: 30%;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .create-user-form label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        .create-user-form input {
+            width: calc(100% - 20px);
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        .create-user-form button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .create-user-form button:hover {
+            background-color: #45a049;
+        }
+
+        .edit-user-form {
+            display: none;
+            width: 60%;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .edit-user-form label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        .edit-user-form input {
+            width: calc(100% - 20px);
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        .edit-user-form button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .edit-user-form button:hover {
+            background-color: #45a049;
+        }
+
+        select[multiple] {
+            width: 100%;
+            height: 100px;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            appearance: none;
+            margin-bottom: 15px;
+        }
+
+        select[multiple]:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+            outline: none;
+        }
+
+    </style>
+</head>
+<body>
+<div class="top-right-buttons">
+    <a href="/login" class="button" sec:authorize="!isAuthenticated()">Login</a>
+    <a href="/logout" class="button" sec:authorize="isAuthenticated()">Logout</a>
+</div>
+<h1>Users list</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>e-mail</th>
+        <th>roles</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}" th:attr="data-user-id=${user.id}" th:attrappend="data-user-roles=${user.formattedRoles}">
+        <td th:text="${user.id}"></td>
+        <td class="user-name" th:text="${user.name}"></td>
+        <td class="user-age" th:text="${user.age}"></td>
+        <td class="user-email" th:text="${user.email}"></td>
+        <td class="user-roles" th:text="${user.formattedRoles}"></td>
+        <td>
+            <!-- Delete button -->
+            <form th:action="@{/admin/delete}" method="post" style="display: inline;">
+                <input type="hidden" th:value="${user.id}" name="id"/>
+                <button type="submit" class="action-btn delete-btn">Delete</button>
+            </form>
+            <!-- Edit button -->
+            <button class="action-btn edit-btn" th:onclick="'populateEditForm(' + ${user.id} + ')'">Edit</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<!-- Add button -->
+<button class="add-btn" onclick="toggleCreateUserForm()">Add</button>
+
+<!-- Add form (hidden by default) -->
+<form class="create-user-form" th:action="@{/admin/add}" method="post" id="createUserForm">
+    <h2>Create New User</h2>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" placeholder="Enter name" required/>
+
+    <label for="password">Password:</label>
+    <input type="text" id="password" name="password" placeholder="Enter password (will be encoded)" required/>
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age" placeholder="Enter age" required/>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" placeholder="Enter email" required/>
+
+    <label for="roles">Roles:</label>
+    <select id="roles" name="roles" multiple>
+        <option th:each="role : ${availableRoles}" th:value="${role.name}" th:text="${role.name}"
+                th:selected="${#lists.contains(defaultRoles, role.name)}"></option>
+    </select>
+
+    <button type="submit">Create User</button>
+</form>
+
+<!-- Edit form (hidden by default) -->
+<form class="edit-user-form" th:action="@{/admin/edit}" method="post" id="editUserForm">
+    <h2>Edit User</h2>
+    <input type="hidden" name="id" id="editId"/>
+
+    <label for="editName">Name:</label>
+    <input type="text" id="editName" name="name" placeholder="Enter name" required/>
+
+    <label for="password">Password:</label>
+    <input type="text" id="editPassword" name="password" placeholder="New password (will be encoded)"/>
+
+    <label for="editAge">Age:</label>
+    <input type="number" id="editAge" name="age" placeholder="Enter age" required/>
+
+    <label for="editEmail">Email:</label>
+    <input type="email" id="editEmail" name="email" placeholder="Enter email" required/>
+
+    <label for="roles">Roles:</label>
+    <select id="editRoles" name="roles" multiple>
+        <option th:each="role : ${availableRoles}" th:value="${role.name}" th:text="${role.name}"></option>
+    </select>
+
+    <button type="submit">Save User</button>
+    <button type="button" onclick="hideEditForm()">Cancel</button>
+</form>
+
+<script>
+    function toggleCreateUserForm() {
+        const form = document.getElementById('createUserForm');
+        if (form.style.display === 'none' || form.style.display === '') {
+            form.style.display = 'block';
+        } else {
+            form.style.display = 'none';
+        }
+    }
+
+    function populateEditForm(id) {
+        const row = document.querySelector(`tr[data-user-id="${id}"]`);
+
+        const name = row.querySelector('.user-name').textContent;
+        const age = row.querySelector('.user-age').textContent;
+        const email = row.querySelector('.user-email').textContent;
+        const roles = row.getAttribute('data-user-roles').split(',');
+
+        document.getElementById('editId').value = id;
+        document.getElementById('editName').value = name;
+        document.getElementById('editAge').value = age;
+        document.getElementById('editEmail').value = email;
+
+        const select = document.getElementById('editRoles');
+        Array.from(select.options).forEach(option => {
+            option.selected = false;
+        });
+
+        roles.forEach(role => {
+            const option = Array.from(select.options).find(opt => opt.value === role.trim());
+            if (option) {
+                option.selected = true;
+            }
+        });
+
+        document.getElementById('editUserForm').style.display = 'block';
+    }
+
+
+    function hideEditForm() {
+        document.getElementById('editUserForm').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
