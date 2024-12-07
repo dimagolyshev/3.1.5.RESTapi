@@ -9,6 +9,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.kata.spring.boot_security.demo.service.UserViewFormatter;
 
 import java.util.List;
 import java.util.Set;
@@ -19,10 +20,12 @@ public class AdminController {
 
     private final UserService userService;
     private final RoleService roleService;
+    private final UserViewFormatter userViewFormatter; // Formatter to print all the user roles in one row
 
-    public AdminController(UserService userService, RoleService roleService) {
+    public AdminController(UserService userService, RoleService roleService, UserViewFormatter userViewFormatter) {
         this.userService = userService;
         this.roleService = roleService;
+        this.userViewFormatter = userViewFormatter;
     }
 
     @GetMapping(value = "/admin")
@@ -33,6 +36,7 @@ public class AdminController {
         model.addAttribute("users", users);
         model.addAttribute("availableRoles", availableRoles);
         model.addAttribute("defaultRoles", defaultRoles);
+        model.addAttribute("userViewFormatter", userViewFormatter);
         return "admin";
     }
 
@@ -43,7 +47,7 @@ public class AdminController {
                           @RequestParam String email,
                           @RequestParam List<String> roles) {
         User user = new User();
-        user.setName(name);
+        user.setUsername(name);
         user.setPassword(password);
         user.setAge(age);
         user.setEmail(email);
@@ -62,7 +66,7 @@ public class AdminController {
                              @RequestParam List<String> roles) {
         User user = new User();
         user.setId(id);
-        user.setName(name);
+        user.setUsername(name);
         user.setPassword(password);
         user.setAge(age);
         user.setEmail(email);

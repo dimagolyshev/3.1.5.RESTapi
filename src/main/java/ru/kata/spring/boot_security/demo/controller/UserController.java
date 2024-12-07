@@ -28,7 +28,7 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findByName(authentication.getName());
         List<String> details = new ArrayList<>();
-        details.add("Username: " + user.getName());
+        details.add("Username: " + user.getUsername());
         details.add("Age: " + user.getAge());
         details.add("E-mail: " + user.getEmail());
 
