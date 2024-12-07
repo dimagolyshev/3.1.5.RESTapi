@@ -7,10 +7,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UserViewFormatterImpl implements UserViewFormatter{
+public class AdminViewFormatterImpl implements AdminViewFormatter {
 
     @Override
-    public String formatRoles(Set<Role> roles) {
+    public String formatUserRoles(Set<Role> roles) {
         return roles.stream()
                 .map(Role::getName)
                 .collect(Collectors.joining(", "));
