@@ -1,0 +1,30 @@
+# DB
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/kata
+    username: root
+    password: 1234567812
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      data-source-properties:
+        verifyServerCertificate: false
+        allowPublicKeyRetrieval: true
+        useSSL: false
+        useLegacyDatetimeCode: false
+        serverTimezone: UTC
+
+  # JPA
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate.format_sql: true
+
+  # Thymeleaf
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
