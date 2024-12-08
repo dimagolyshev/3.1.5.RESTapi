@@ -2,7 +2,7 @@ package ru.kata.spring.boot_security.demo.controller;
 
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.service.AdminViewFormatter;
+import ru.kata.spring.boot_security.demo.service.ViewFormatter;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 import org.springframework.stereotype.Controller;
@@ -20,12 +20,12 @@ public class AdminController {
 
     private final UserService userService;
     private final RoleService roleService;
-    private final AdminViewFormatter adminViewFormatter; // Formatter to print all user roles in one row
+    private final ViewFormatter viewFormatter; // Formatter to print all user roles in one row
 
-    public AdminController(UserService userService, RoleService roleService, AdminViewFormatter adminViewFormatter) {
+    public AdminController(UserService userService, RoleService roleService, ViewFormatter viewFormatter) {
         this.userService = userService;
         this.roleService = roleService;
-        this.adminViewFormatter = adminViewFormatter;
+        this.viewFormatter = viewFormatter;
     }
 
     @GetMapping(value = "/admin")
@@ -36,7 +36,7 @@ public class AdminController {
         model.addAttribute("users", users);
         model.addAttribute("availableRoles", availableRoles);
         model.addAttribute("defaultRoles", defaultRoles);
-        model.addAttribute("adminViewFormatter", adminViewFormatter);
+        model.addAttribute("viewFormatter", viewFormatter);
         return "admin";
     }
 

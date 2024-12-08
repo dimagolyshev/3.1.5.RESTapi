@@ -159,12 +159,12 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="user : ${users}" th:attr="data-user-id=${user.id}" th:attrappend="data-user-roles=${adminViewFormatter.formatUserRoles(user.roles)}">
+    <tr th:each="user : ${users}" th:attr="data-user-id=${user.id}" th:attrappend="data-user-roles=${viewFormatter.formatUserRoles(user.roles)}">
         <td th:text="${user.id}"></td>
         <td class="user-name" th:text="${user.username}"></td>
         <td class="user-age" th:text="${user.age}"></td>
         <td class="user-email" th:text="${user.email}"></td>
-        <td class="user-roles" th:text="${adminViewFormatter.formatUserRoles(user.roles)}"></td>
+        <td class="user-roles" th:text="${viewFormatter.formatUserRoles(user.roles)}"></td>
         <td>
             <!-- Delete button -->
             <form th:action="@{/admin/delete}" method="post" style="display: inline;">

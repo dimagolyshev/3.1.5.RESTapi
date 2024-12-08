@@ -13,7 +13,7 @@
 <h1>Welcome, <span sec:authentication="name"></span>!</h1>
 
 <div>
-    <th:block th:each="detail : ${details}">
+    <th:block th:each="detail : ${userDetails}">
         <p th:text="${detail}"></p>
     </th:block>
 </div>

@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class AdminViewFormatterImpl implements AdminViewFormatter {
+public class ViewFormatterImpl implements ViewFormatter {
 
     @Override
     public String formatUserRoles(Set<Role> roles) {
