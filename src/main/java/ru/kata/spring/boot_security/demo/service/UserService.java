@@ -6,14 +6,16 @@ import ru.kata.spring.boot_security.demo.model.User;
 import java.util.List;
 
 public interface UserService extends UserDetailsService {
-    void add(User user);
+    void add(String name, String password, Byte age, String email, List<String> roles);
 
     List<User> list();
 
-    User edit(User user);
+    User edit(Long id, String name, String password, Byte age, String email, List<String> roles);
 
     void deleteById(Long id);
 
     User findByName(String name);
+
+    List<String> getUserDetails(User user);
 
 }

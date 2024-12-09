@@ -13,5 +13,8 @@ public interface UserDao {
 
     void deleteById(Long id);
 
+    User findById(Long id);
+
     User findByName(String name);
+
 }

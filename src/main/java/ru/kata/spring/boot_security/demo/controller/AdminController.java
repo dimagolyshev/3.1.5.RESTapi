@@ -1,7 +1,5 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-import ru.kata.spring.boot_security.demo.model.Role;
-import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.ViewFormatter;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
@@ -12,15 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
 public class AdminController {
 
     private final UserService userService;
     private final RoleService roleService;
-    private final ViewFormatter viewFormatter; // Formatter to print all user roles in one row
+    private final ViewFormatter viewFormatter;
 
     public AdminController(UserService userService, RoleService roleService, ViewFormatter viewFormatter) {
         this.userService = userService;
@@ -30,12 +26,9 @@ public class AdminController {
 
     @GetMapping(value = "/admin")
     public String printUsers(ModelMap model) {
-        List<User> users = userService.list();
-        List<Role> availableRoles = roleService.list();
-        List<String> defaultRoles = roleService.getDefaultRoles();
-        model.addAttribute("users", users);
-        model.addAttribute("availableRoles", availableRoles);
-        model.addAttribute("defaultRoles", defaultRoles);
+        model.addAttribute("users", userService.list());
+        model.addAttribute("availableRoles", roleService.list());
+        model.addAttribute("defaultRoles", roleService.getDefaultRoles());
         model.addAttribute("viewFormatter", viewFormatter);
         return "admin";
     }
@@ -46,14 +39,7 @@ public class AdminController {
                           @RequestParam byte age,
                           @RequestParam String email,
                           @RequestParam List<String> roles) {
-        User user = new User();
-        user.setUsername(name);
-        user.setPassword(password);
-        user.setAge(age);
-        user.setEmail(email);
-        Set<Role> userRoles = roles.stream().map(roleService::findByName).collect(Collectors.toSet());
-        user.setRoles(userRoles);
-        userService.add(user);
+        userService.add(name, password, age, email, roles);
         return "redirect:/admin";
     }
 
@@ -64,15 +50,7 @@ public class AdminController {
                              @RequestParam byte age,
                              @RequestParam String email,
                              @RequestParam List<String> roles) {
-        User user = new User();
-        user.setId(id);
-        user.setUsername(name);
-        user.setPassword(password);
-        user.setAge(age);
-        user.setEmail(email);
-        Set<Role> userRoles = roles.stream().map(roleService::findByName).collect(Collectors.toSet());
-        user.setRoles(userRoles);
-        userService.edit(user);
+        userService.edit(id, name, password, age, email, roles);
         return "redirect:/admin";
     }
 

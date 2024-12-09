@@ -20,7 +20,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> list() {
-        return entityManager.createQuery("FROM User", User.class)
+        return entityManager.createQuery("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles", User.class)
                 .getResultList();
     }
 
@@ -37,8 +37,15 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public User findById(Long id) {
+        return entityManager.createQuery("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.id = :id", User.class)
+                .setParameter("id", id)
+                .getSingleResult();
+    }
+
+    @Override
     public User findByName(String name) {
-        return entityManager.createQuery("FROM User u WHERE u.username = :username", User.class)
+        return entityManager.createQuery("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.username = :username", User.class)
                 .setParameter("username", name)
                 .getSingleResult();
     }
