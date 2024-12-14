@@ -20,6 +20,11 @@ spring:
     show-sql: false
     properties:
       hibernate.format_sql: true
+      hibernate.use_sql_comments: true
+logging:
+  level:
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
 
   # Thymeleaf
   thymeleaf:

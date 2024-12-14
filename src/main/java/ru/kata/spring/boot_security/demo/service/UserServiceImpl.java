@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,9 +29,10 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void add(String name, String password, Byte age, String email, List<String> roles) {
+    public void add(String firstName, String lastName, String password, Byte age, String email, List<String> roles) {
         User user = new User();
-        user.setUsername(name);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
         user.setPassword(passwordEncoder.encode(password));
         user.setAge(age);
         user.setEmail(email);
@@ -48,10 +50,11 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User edit(Long id, String name, String password, Byte age, String email, List<String> roles) {
+    public User edit(Long id, String firstName, String lastName, String password, Byte age, String email, List<String> roles) {
         User user = new User();
         user.setId(id);
-        user.setUsername(name);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
         if (!password.isEmpty()) {
             user.setPassword(passwordEncoder.encode(password));
         }
@@ -74,26 +77,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByName(String name) {
-        return userDao.findByName(name);
+    public User findByUsername(String username) {
+        return userDao.findByUsername(username);
     }
 
     @Override
-    public List<String> getUserDetails(User user) {
-        return List.of(
-                "Username: " + user.getUsername()
-                , "Age: " + user.getAge()
-                , "E-mail: " + user.getEmail()
-                , "Roles: " + user.getRoles()
+    public Map<String, String> getUserDetails(User user) {
+        return Map.of(
+                "id", user.getId().toString()
+                , "firstName", user.getFirstName()
+                , "lastName", user.getLastName()
+                , "age", user.getAge().toString()
+                , "email", user.getEmail()
+                , "roles", user.getRoles()
                         .stream()
                         .map(Role::getName)
-                        .collect(Collectors.joining(", "))
+                        .collect(Collectors.joining(" "))
         );
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userDao.findByName(username);
+        User user = userDao.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException(String.format("%s not found in database", username));
         }

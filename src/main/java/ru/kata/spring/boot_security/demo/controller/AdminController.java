@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import ru.kata.spring.boot_security.demo.service.ViewFormatter;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
@@ -26,31 +28,37 @@ public class AdminController {
 
     @GetMapping(value = "/admin")
     public String printUsers(ModelMap model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        model.addAttribute("userDetails",
+                userService.getUserDetails(
+                        userService.findByUsername(
+                                authentication.getName())));
         model.addAttribute("users", userService.list());
         model.addAttribute("availableRoles", roleService.list());
-        model.addAttribute("defaultRoles", roleService.getDefaultRoles());
         model.addAttribute("viewFormatter", viewFormatter);
         return "admin";
     }
 
     @PostMapping(value = "/admin/add")
-    public String addUser(@RequestParam String name,
+    public String addUser(@RequestParam String firstName,
+                          @RequestParam String lastName,
                           @RequestParam String password,
                           @RequestParam byte age,
                           @RequestParam String email,
                           @RequestParam List<String> roles) {
-        userService.add(name, password, age, email, roles);
+        userService.add(firstName, lastName, password, age, email, roles);
         return "redirect:/admin";
     }
 
     @PostMapping(value = "/admin/edit")
     public String updateUser(@RequestParam Long id,
-                             @RequestParam String name,
+                             @RequestParam String firstName,
+                             @RequestParam String lastName,
                              @RequestParam String password,
                              @RequestParam byte age,
                              @RequestParam String email,
                              @RequestParam List<String> roles) {
-        userService.edit(id, name, password, age, email, roles);
+        userService.edit(id, firstName, lastName, password, age, email, roles);
         return "redirect:/admin";
     }
 

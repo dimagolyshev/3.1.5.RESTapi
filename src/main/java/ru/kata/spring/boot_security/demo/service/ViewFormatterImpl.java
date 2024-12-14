@@ -13,6 +13,6 @@ public class ViewFormatterImpl implements ViewFormatter {
     public String formatUserRoles(Set<Role> roles) {
         return roles.stream()
                 .map(Role::getName)
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.joining(" "));
     }
 }

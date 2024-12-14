@@ -4,6 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -27,12 +28,15 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    private String firstName;
+
+    private String lastName;
 
     private String password;
 
     private Byte age;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -46,13 +50,6 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String username, String password, Byte age, String email) {
-        this.username = username;
-        this.password = password;
-        this.age = age;
-        this.email = email;
-    }
-
     public Long getId() {
         return id;
     }
@@ -61,12 +58,20 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getPassword() {
@@ -102,6 +107,11 @@ public class User implements UserDetails {
     }
 
     @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
@@ -131,21 +141,21 @@ public class User implements UserDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(username, user.username)
-                && Objects.equals(age, user.age)
-                && Objects.equals(email, user.email);
+        return Objects.equals(id, user.id) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(password, user.password) && Objects.equals(age, user.age) && Objects.equals(email, user.email) && Objects.equals(roles, user.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, age, email);
+        return Objects.hash(id, firstName, lastName, password, age, email, roles);
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", name='" + username + '\'' +
+                ", firstname='" + firstName + '\'' +
+                ", lastname='" + lastName + '\'' +
+                ", password='" + password + '\'' +
                 ", age=" + age +
                 ", email='" + email + '\'' +
                 ", roles=" + roles +

@@ -4,18 +4,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import ru.kata.spring.boot_security.demo.model.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService extends UserDetailsService {
-    void add(String name, String password, Byte age, String email, List<String> roles);
+    void add(String firstName, String lastName,  String password, Byte age, String email, List<String> roles);
 
     List<User> list();
 
-    User edit(Long id, String name, String password, Byte age, String email, List<String> roles);
+    User edit(Long id, String firstName, String lastName, String password, Byte age, String email, List<String> roles);
 
     void deleteById(Long id);
 
-    User findByName(String name);
+    User findByUsername(String username);
 
-    List<String> getUserDetails(User user);
+    Map<String, String > getUserDetails(User user);
 
 }

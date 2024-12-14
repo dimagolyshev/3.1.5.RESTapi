@@ -7,7 +7,5 @@ import java.util.List;
 public interface RoleService {
     List<Role> list();
 
-    List<String> getDefaultRoles();
-
     Role findByName(String name);
 }
