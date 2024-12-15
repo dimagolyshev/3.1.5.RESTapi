@@ -39,6 +39,7 @@ public class AdminController {
         return "admin";
     }
 
+    /*
     @PostMapping(value = "/admin/add")
     public String addUser(@RequestParam String firstName,
                           @RequestParam String lastName,
@@ -67,5 +68,7 @@ public class AdminController {
         userService.deleteById(id);
         return "redirect:/admin";
     }
+
+     */
 
 }

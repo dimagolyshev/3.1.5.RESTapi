@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserService extends UserDetailsService {
-    void add(String firstName, String lastName,  String password, Byte age, String email, List<String> roles);
+    User add(User user);
 
     List<User> list();
 
-    User edit(Long id, String firstName, String lastName, String password, Byte age, String email, List<String> roles);
+    User edit(User user);
 
     void deleteById(Long id);
 

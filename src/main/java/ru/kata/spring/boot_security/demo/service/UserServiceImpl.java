@@ -29,18 +29,14 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void add(String firstName, String lastName, String password, Byte age, String email, List<String> roles) {
-        User user = new User();
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setAge(age);
-        user.setEmail(email);
-        user.setRoles(roles
+    public User add(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(user.getRoles()
                 .stream()
+                .map(Role::getName)
                 .map(roleService::findByName)
                 .collect(Collectors.toSet()));
-        userDao.add(user);
+        return userDao.add(user);
     }
 
     @Override
@@ -50,21 +46,16 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User edit(Long id, String firstName, String lastName, String password, Byte age, String email, List<String> roles) {
-        User user = new User();
-        user.setId(id);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        if (!password.isEmpty()) {
-            user.setPassword(passwordEncoder.encode(password));
+    public User edit(User user) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         else {
-            user.setPassword(userDao.findById(id).getPassword());
+            user.setPassword(userDao.findById(user.getId()).getPassword());
         }
-        user.setAge(age);
-        user.setEmail(email);
-        user.setRoles(roles
+        user.setRoles(user.getRoles()
                 .stream()
+                .map(Role::getName)
                 .map(roleService::findByName)
                 .collect(Collectors.toSet()));
         return userDao.edit(user);
