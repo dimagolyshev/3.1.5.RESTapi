@@ -29,13 +29,13 @@ public class AdminController {
     @GetMapping(value = "/admin")
     public String printUsers(ModelMap model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        model.addAttribute("userDetails",
-                userService.getUserDetails(
-                        userService.findByUsername(
-                                authentication.getName())));
-        model.addAttribute("users", userService.list());
+        //model.addAttribute("userDetails",
+        //        userService.getUserDetails(
+        //                userService.findByUsername(
+        //                        authentication.getName())));
+        //model.addAttribute("users", userService.list());
         model.addAttribute("availableRoles", roleService.list());
-        model.addAttribute("viewFormatter", viewFormatter);
+        //model.addAttribute("viewFormatter", viewFormatter);
         return "admin";
     }
 
