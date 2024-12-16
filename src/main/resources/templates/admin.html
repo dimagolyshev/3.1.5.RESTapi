@@ -23,7 +23,7 @@
         <!-- Side panel -->
         <nav class="col-md-2 sidebar">
             <a href="#" class="active">Admin</a>
-            <a href="/user">User</a>
+            <a href="/api/user">User</a>
         </nav>
 
         <!-- Main content -->
@@ -215,52 +215,154 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-
-    async function fetchUsers() {
-        try {
-            const response = await fetch('/api/users');
-            if (!response.ok) {
-                throw new Error(`Ошибка HTTP: ${response.status}`);
-            }
-            const users = await response.json();
-            populateTable(users);
-        } catch (error) {
-            console.error('Ошибка загрузки данных:', error);
-        }
-    }
-
-    // Функция для заполнения таблицы
-    function populateTable(users) {
-        const userTableBody = document.getElementById('userTableBody');
-        userTableBody.innerHTML = ''; // Очистить содержимое перед заполнением
-        users.forEach(user => {
-            const row = document.createElement('tr');
-
-            row.innerHTML = `
-                <td>${user.id}</td>
-                <td>${user.firstName}</td>
-                <td>${user.lastName}</td>
-                <td>${user.age}</td>
-                <td>${user.email}</td>
-                <td>${formatUserRoles(user.roles)}</td>
-                <td><button class="btn btn-success btn-sm btn-edit" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button></td>
-                <td><button class="btn btn-delete btn-sm btn-delete-modal" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Delete</button></td>
-            `;
-            userTableBody.appendChild(row);
-        });
-    }
-
-    // Функция для форматирования ролей
-    function formatUserRoles(roles) {
-        return roles.map(role => role.name).join(' ');
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
+
+		// Forms handlers
+		const addUserForm = document.getElementById('addUserForm');
+        const userTableTab = document.getElementById('users-table-tab');
+
+		const editUserForm = document.getElementById('editUserForm');
+        const editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+
+		const deleteUserForm = document.getElementById('deleteUserForm');
+        const deleteUserModal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+
+
+		// Add
+        addUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const age = document.getElementById('age').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const rolesSelect = document.getElementById('roles');
+            const roles = Array.from(rolesSelect.selectedOptions).map(option => ({ name: option.value }));
+
+            const newUser = { firstName, lastName, age, email, password, roles };
+
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newUser),
+                });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+                addUserForm.reset();
+				fetchUsers();
+                const bootstrapTab = new bootstrap.Tab(userTableTab);
+                bootstrapTab.show();
+            } catch (error) {
+                console.error('Error while trying to add user:', error);
+            }
+        });
+
+
+		// Edit
+        editUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('editId').value;
+            const firstName = document.getElementById('editFirstName').value;
+            const lastName = document.getElementById('editLastName').value;
+            const age = document.getElementById('editAge').value;
+            const email = document.getElementById('editEmail').value;
+            const password = document.getElementById('editPassword').value;
+
+            const rolesSelect = document.getElementById('editRole');
+            const roles = Array.from(rolesSelect.selectedOptions).map(option => ({ name: option.value }));
+
+            const user = { firstName, lastName, age, email, password, roles };
+
+            try {
+                const response = await fetch(`/api/users/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(user),
+                });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+                fetchUsers();
+                editUserModal.hide();
+            } catch (error) {
+                console.error('Error while trying to edit user:', error);
+            }
+        });
+
+
+        // Delete
+        deleteUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('deleteId').value;
+
+            try {
+                const response = await fetch(`/api/users/${id}`, {
+                    method: 'DELETE',
+                });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+                fetchUsers();
+                deleteUserModal.hide();
+            } catch (error) {
+                console.error('Error while trying to delete user:', error);
+            }
+        });
+
+
+		// Fetch users
+		async function fetchUsers() {
+			try {
+				const response = await fetch('/api/users');
+				if (!response.ok) {
+					throw new Error(`Error: ${response.status}`);
+				}
+				const users = await response.json();
+				fillTable(users);
+			} catch (error) {
+				console.error('Error while trying to fetch users:', error);
+			}
+		}
+
+		function fillTable(users) {
+			const userTableBody = document.getElementById('userTableBody');
+			userTableBody.innerHTML = '';
+			users.forEach(user => {
+				const row = document.createElement('tr');
+
+				row.innerHTML = `
+					<td>${user.id}</td>
+					<td>${user.firstName}</td>
+					<td>${user.lastName}</td>
+					<td>${user.age}</td>
+					<td>${user.email}</td>
+					<td>${formatUserRoles(user.roles)}</td>
+					<td><button class="btn btn-success btn-sm btn-edit" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button></td>
+					<td><button class="btn btn-delete btn-sm btn-delete-modal" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Delete</button></td>
+				`;
+				userTableBody.appendChild(row);
+			});
+		}
+
+		function formatUserRoles(roles) {
+			return roles.map(role => role.name).join(' ');
+		}
 
         fetchUsers();
 
-        // Делегирование событий для кнопок Edit
+
+        // Table buttons handlers
         document.getElementById('userTableBody').addEventListener('click', (e) => {
+
             if (e.target.classList.contains('btn-edit')) {
                 const row = e.target.closest('tr');
                 const id = row.cells[0].textContent;
@@ -280,12 +382,9 @@
                 Array.from(roleSelect.options).forEach(option => {
                     option.selected = roles.includes(option.value);
                 });
-            }
-        });
+			}
 
-        // Делегирование событий для кнопок Delete
-        document.getElementById('userTableBody').addEventListener('click', (e) => {
-            if (e.target.classList.contains('btn-delete-modal')) {
+			if (e.target.classList.contains('btn-delete-modal')) {
                 const row = e.target.closest('tr');
                 const id = row.cells[0].textContent;
                 const firstName = row.cells[1].textContent;
@@ -307,134 +406,7 @@
             }
         });
 
-
-        const editUserForm = document.getElementById('editUserForm');
-        const editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
-
-        // Обработчик отправки формы редактирования
-        editUserForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Остановить стандартное поведение формы
-
-            const id = document.getElementById('editId').value;
-            const firstName = document.getElementById('editFirstName').value;
-            const lastName = document.getElementById('editLastName').value;
-            const age = document.getElementById('editAge').value;
-            const email = document.getElementById('editEmail').value;
-            const password = document.getElementById('editPassword').value;
-
-            const rolesSelect = document.getElementById('editRole');
-            const roles = Array.from(rolesSelect.selectedOptions).map(option => ({ name: option.value }));
-
-            // Создание объекта пользователя
-            const user = { firstName, lastName, age, email, password, roles };
-
-            try {
-                // Отправка PUT-запроса
-                const response = await fetch(`/api/users/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(user),
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Ошибка HTTP: ${response.status}`);
-                }
-
-                // Закрыть модальное окно
-                editUserModal.hide();
-
-                // Обновить таблицу
-                fetchUsers();
-            } catch (error) {
-                console.error('Ошибка обновления пользователя:', error);
-            }
-        });
-
-
-        const deleteUserForm = document.getElementById('deleteUserForm');
-        const deleteUserModal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
-
-        // Обработчик отправки формы удаления
-        deleteUserForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Остановить стандартное поведение формы
-
-            const id = document.getElementById('deleteId').value;
-
-            try {
-                // Отправка DELETE-запроса
-                const response = await fetch(`/api/users/${id}`, {
-                    method: 'DELETE',
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Ошибка HTTP: ${response.status}`);
-                }
-
-                // Закрыть модальное окно
-                deleteUserModal.hide();
-
-                // Обновить таблицу
-                fetchUsers();
-            } catch (error) {
-                console.error('Ошибка удаления пользователя:', error);
-            }
-        });
-
-
-        const addUserForm = document.getElementById('addUserForm');
-        const userTableTab = document.querySelector('#users-table-tab');
-
-        // Обработчик отправки формы добавления
-        addUserForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Остановить стандартное поведение формы
-
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const age = document.getElementById('age').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            const rolesSelect = document.getElementById('roles');
-            const roles = Array.from(rolesSelect.selectedOptions).map(option => ({ name: option.value }));
-
-            // Создание объекта нового пользователя
-            const newUser = { firstName, lastName, age, email, password, roles };
-
-            try {
-                // Отправка POST-запроса
-                const response = await fetch('/api/users', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(newUser),
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Ошибка HTTP: ${response.status}`);
-                }
-
-                // Успешное добавление пользователя
-                console.log('Пользователь добавлен:', await response.json());
-
-                // Очистить форму после успешного добавления
-                addUserForm.reset();
-
-                // Переключиться на вкладку с таблицей
-                const bootstrapTab = new bootstrap.Tab(userTableTab);
-                bootstrapTab.show();
-
-                // Обновить таблицу
-                fetchUsers();
-            } catch (error) {
-                console.error('Ошибка добавления пользователя:', error);
-            }
-        });
-
     });
-
 </script>
 </body>
 </html>

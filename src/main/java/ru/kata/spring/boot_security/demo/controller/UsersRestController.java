@@ -1,6 +1,5 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,8 +13,9 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.util.List;
 
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 public class UsersRestController {
 
     private final UserService userService;
@@ -24,23 +24,23 @@ public class UsersRestController {
         this.userService = userService;
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public List<User> getAllUsers() {
         return userService.list();
     }
 
-    @PostMapping("/users")
+    @PostMapping
     public User addUser(@RequestBody User user) {
         return userService.add(user);
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/{id}")
     public User updateUser(@PathVariable Long id, @RequestBody User user) {
         user.setId(id);
         return userService.edit(user);
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
     }
