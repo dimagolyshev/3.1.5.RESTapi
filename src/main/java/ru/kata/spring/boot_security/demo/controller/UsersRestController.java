@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,24 +26,25 @@ public class UsersRestController {
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.list();
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.list());
     }
 
     @PostMapping
-    public User addUser(@RequestBody User user) {
-        return userService.add(user);
+    public ResponseEntity<User> addUser(@RequestBody User user) {
+        return ResponseEntity.ok(userService.add(user));
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         user.setId(id);
-        return userService.edit(user);
+        return ResponseEntity.ok(userService.edit(user));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
